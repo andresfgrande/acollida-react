@@ -1,5 +1,12 @@
 import { Outlet, Link } from "react-router-dom";
+import AuthDetails from "../components/AuthDetails";
+import React, { useEffect, useState } from 'react';
+
 export default function(){
+
+    useEffect(()=>{
+    
+    },[])
     return(
         <>
 
@@ -13,6 +20,12 @@ export default function(){
                     </li>
                     <li>
                     <Link to={`register`}>Register</Link>
+                    </li>
+                    <li>
+                    <Link to={`dashboard`}>Dashboard</Link>
+                    </li>
+                    <li>
+                    <Link to={`account`}>Mi Cuenta</Link>
                     </li>
                 </ul>
             </nav>
