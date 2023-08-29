@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {auth} from "../firebase";
 import AuthDetails from "../components/AuthDetails";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link} from "react-router-dom";
 import { doc, getDoc } from 'firebase/firestore/lite';
 import {db} from "../firebase";
 
@@ -21,6 +21,7 @@ export default function(){
         if (userDoc.exists()) {
             setUser(userDoc.data());
             let lastYear = getLastYear(userDoc.data());
+            console.log('hey',lastYear);
             setCurrentYear(lastYear);
         } else {
             console.log("No such user!");
@@ -69,18 +70,33 @@ export default function(){
       
     },[])
 
+
+
     const renderYears = () => {
+        const handleYearClick = (yearKey) => {
+            const selectedYear = user.years[yearKey];
+            setCurrentYear(selectedYear);
+            loadMonths(selectedYear.id);
+            console.log("current year: ", currentYear);
+        };
+    
         if (user && user.years) {
             const yearsKeys = Object.keys(user.years);
             if (yearsKeys.length > 0) {
                 return (
-                    <ul>
-                        {yearsKeys.map((yearKey, index) => (
-                            <li key={index}>
-                                Year: {yearKey}, Name: {user.years[yearKey].name}, ID: {user.years[yearKey].id}
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="year-nav">
+                        <ul className="year-list">
+                            {yearsKeys.map((yearKey, index) => (
+                                <li 
+                                    key={index} 
+                                    className="year-item"
+                                    onClick={() => handleYearClick(yearKey)}
+                                >
+                                    {yearKey}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 );
             } else {
                 return <p>No years available.</p>;
@@ -89,21 +105,25 @@ export default function(){
             return <p>No years available.</p>;
         }
     };
-
+    
     const renderMonths = () => {
-   
         if (months) {
             const monthKeys = Object.keys(months);
             if (monthKeys.length > 0) {
                 return (
-                    <ul>
-                        {monthKeys.map((monthKey, index) => (
-                            <li key={index}>
-                                Month ID: {months[monthKey].month_id}, 
-                                Name: {months[monthKey].name}
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="container">
+                        <div className="month-grid">
+                            {monthKeys.map((monthKey, index) => (
+                                <Link to={`year/${currentYear.name}/${currentYear.id}/month/${months[monthKey].name}/${months[monthKey].month_id}`} key={index}>
+                                <div className="month-card" key={index}  >
+                                    <h3>{months[monthKey].name}</h3>
+                                    <p>ID: {months[monthKey].month_id}</p>
+                                </div>
+                                </Link>
+                                
+                            ))}
+                        </div>
+                    </div>
                 );
             } else {
                 return <p>No months available.</p>;
@@ -112,6 +132,7 @@ export default function(){
             return <p>No months available.</p>;
         }
     };
+    
 
 
     return(
@@ -130,7 +151,7 @@ export default function(){
 
             {currentYear ? (
             <div>
-                <h2>Year: {currentYear.name}</h2>
+                <h2 className='title-year'>{currentYear.name}</h2>
                 {renderMonths()}
             </div>
         ) : (

@@ -1,0 +1,78 @@
+
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  max-width: 1200px;  /* Set a max-width for the grid */
+  width: 100%;  /* Takes full width */
+  margin: 0 auto;  /* Centers the grid horizontally */
+}
+
+
+.month-card {
+  background: #e6f7ff;  /* Soft blue background */
+  border: 1px solid #b3daff;  /* Slightly darker blue border */
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  color: #333;
+  cursor: pointer;
+}
+
+.month-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);  /* Slightly darker shadow on hover */
+  
+}
+
+.month-card h3 {
+  margin: 0;
+  font-size: 1.2em;
+  color: #0077cc;  /* Darker blue for text */
+}
+
+.month-card p {
+  margin: 8px 0 0;
+  color: #555;
+}
+
+
+.year-nav {
+  display: flex;
+  justify-content: center;
+  background-color: #e6f7ff;  /* Soft blue background */
+  padding: 10px;
+}
+
+.year-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 16px;
+}
+
+.year-item {
+  padding: 10px 20px;
+  background-color: #b3daff;  /* Slightly darker blue */
+  border-radius: 8px;
+  color: #0077cc;  /* Darker blue for text */
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.year-item:hover {
+  background-color: #0077cc;  /* Darker blue on hover */
+  color: #fff;  /* White text on hover */
+}
+
+.title-year{
+  text-align: center;
+}

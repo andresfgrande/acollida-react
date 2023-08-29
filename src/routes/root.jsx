@@ -27,9 +27,6 @@ export default function(){
                     <li>
                     <Link to={`account`}>Mi Cuenta</Link>
                     </li>
-                    <li>
-                    <Link to={`dashboard/year`}>Dashboard/year</Link>
-                    </li>
                 </ul>
             </nav>
 

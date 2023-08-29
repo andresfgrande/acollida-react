@@ -9,7 +9,10 @@ import ErrorPage from "./routes/Error-page";
 import './index.css'
 import Dashboard from "./routes/Dashboard";
 import Account from "./routes/Account";
+import Month from "./routes/Month";
 import "../src/style/account.css";
+import "../src/style/dashboard.css";
+import "../src/style/month.css";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "account",
         element: <Account/>,
+      },
+      {
+        path: "dashboard/year/:numYear/:yearId/month/:monthName/:monthId",
+        element: <Month/>,
       },
     ]
   },
