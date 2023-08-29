@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {auth} from "../firebase";
 import AuthDetails from "../components/AuthDetails";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { useNavigate, useParams  } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { doc, getDoc } from 'firebase/firestore/lite';
 import {db} from "../firebase";
 
@@ -41,12 +41,14 @@ export default function(){
           return (
             <div className="kids-grid">
               {kidKeys.map((kidKey, index) => (
-                <div className={`kid-card ${kids[kidKey].paid ? '' : 'not-paid'}`}  key={index} >
-                  <h3>{kids[kidKey].name} {kids[kidKey].surname}</h3>
-                  <p>Horas: {kids[kidKey].total_hours}</p>
-                  <p>Monto: {kids[kidKey].total_price} €</p>
-                  <p> {kids[kidKey].paid ? 'Pagado' : 'No pagado'}</p>
-                </div>
+                 <Link to={`kid/${kids[kidKey].kid_id}`} key={index}>
+                    <div className={`kid-card ${kids[kidKey].paid ? '' : 'not-paid'}`}  key={index} >
+                        <h3>{kids[kidKey].name} {kids[kidKey].surname}</h3>
+                        <p>Horas: {kids[kidKey].total_hours}</p>
+                        <p>Monto: {kids[kidKey].total_price} €</p>
+                        <p> {kids[kidKey].paid ? 'Pagado' : 'No pagado'}</p>
+                    </div>
+                </Link>
               ))}
             </div>
           );
