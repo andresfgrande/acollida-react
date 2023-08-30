@@ -3,7 +3,7 @@ import {auth} from "../firebase";
 import AuthDetails from "../components/AuthDetails";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useNavigate, Link} from "react-router-dom";
-import { doc, getDoc } from 'firebase/firestore/lite';
+import { doc, getDoc, collection, addDoc, updateDoc } from 'firebase/firestore/lite';
 import {db} from "../firebase";
 
 export default function(){
@@ -11,24 +11,28 @@ export default function(){
     const [user, setUser] = useState(null);
     const [currentYear, setCurrentYear] = useState(null);
     const [months, setMonths] = useState(null);
+    const [userId, setUserId] = useState(null);
+    const [newYearName, setNewYearName] = useState("");
   
     const navigate = useNavigate();
 
     async function loadUserData(userId) {
         const userRef = doc(db, 'usuarios', userId);
         const userDoc = await getDoc(userRef);
-    
+    console.log(userDoc.id,'heyyyyy');
         if (userDoc.exists()) {
             setUser(userDoc.data());
+            setUserId(userDoc.id);
             let lastYear = getLastYear(userDoc.data());
             console.log('hey',lastYear);
+            loadMonthsFromYear(lastYear.id);
             setCurrentYear(lastYear);
         } else {
             console.log("No such user!");
         }
     }
 
-    async function loadMonths(yearId){
+    async function loadMonthsFromYear(yearId){
     
         const yearRef = doc(db, 'years', yearId);
         const yearDoc = await getDoc(yearRef);
@@ -41,11 +45,65 @@ export default function(){
         }
     }
 
+    async function createNewYear(yearName) {
+
+        const newYearData = {
+            name: yearName,
+            months:{}
+          };
+
+        try {
+            const yearRef = await addDoc(collection(db, 'years'), newYearData);
+            const newYearId = yearRef.id;
+            console.log("New year created with ID: ", newYearId);
+            const updatedYear = await addNewYearToUser(newYearData.name, newYearId);
+        
+            setUser({
+              ...user,
+              years: {
+                ...user.years,
+                [newYearData.name]: updatedYear
+              }
+            });
+        
+            setCurrentYear(updatedYear);
+            loadMonthsFromYear(newYearId);
+        
+            return newYearId;
+          } catch (e) {
+            console.error("Error adding new year: ", e);
+          }
+    }
+
+    async function addNewYearToUser(yearName, newYearId) {
+        
+        const newYearData = {
+          [`years.${yearName}`]: {
+            id: newYearId,
+            name: yearName
+          }
+        };
+      
+        try {
+            const userRef = doc(db, 'usuarios', userId);
+            await updateDoc(userRef, newYearData);
+        
+            console.log("New year added to user: ", userId);
+        
+            return {
+              id: newYearId,
+              name: yearName
+            };
+          } catch (e) {
+            console.error("Error adding new year to user: ", e);
+          }
+      }
+
     const getLastYear = (user) => {
         if (user && user.years) {
             const yearsKeys = Object.keys(user.years);
             if (yearsKeys.length > 0) {
-                const sortedKeys = yearsKeys.sort((a, b) => a - b); // Sort numerically
+                const sortedKeys = yearsKeys.sort((a, b) => a - b); 
                 const lastYearKey = sortedKeys[sortedKeys.length - 1];
                 return user.years[lastYearKey];
             }
@@ -57,7 +115,6 @@ export default function(){
         const listen = onAuthStateChanged(auth, (user)=>{
             if(user){
                 loadUserData(user.uid)
-                loadMonths('gCY9ag2GLH1qtaDmMfR9');
                 navigate("/dashboard");
             }else{
                 navigate("/login");
@@ -69,16 +126,18 @@ export default function(){
         }
       
     },[])
+  
 
-
+    const handleYearClick = (yearKey) => {
+        console.log('keyyy: ', yearKey);
+        const selectedYear = user.years[yearKey];
+        setCurrentYear(selectedYear);
+        loadMonthsFromYear(selectedYear.id);
+        console.log("current year: ", currentYear);
+    };
 
     const renderYears = () => {
-        const handleYearClick = (yearKey) => {
-            const selectedYear = user.years[yearKey];
-            setCurrentYear(selectedYear);
-            loadMonths(selectedYear.id);
-            console.log("current year: ", currentYear);
-        };
+       
     
         if (user && user.years) {
             const yearsKeys = Object.keys(user.years);
@@ -117,7 +176,6 @@ export default function(){
                                 <Link to={`year/${currentYear.name}/${currentYear.id}/month/${months[monthKey].name}/${months[monthKey].month_id}`} key={index}>
                                 <div className="month-card" key={index}  >
                                     <h3>{months[monthKey].name}</h3>
-                                    <p>ID: {months[monthKey].month_id}</p>
                                 </div>
                                 </Link>
                                 
@@ -126,7 +184,7 @@ export default function(){
                     </div>
                 );
             } else {
-                return <p>No months available.</p>;
+                return <p className='no-data'>No months available.</p>;
             }
         } else {
             return <p>No months available.</p>;
@@ -139,9 +197,12 @@ export default function(){
         <>
             <h1>
             Dashboard
+           
             </h1>
+            
           
             {user ? (
+                 
                 <div>
                     {renderYears()}
                 </div>
@@ -157,7 +218,23 @@ export default function(){
         ) : (
             <p>Loading year data...</p>
         )}
-            <AuthDetails></AuthDetails>
+       
+       <div className="new-year-form-container">
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        createNewYear(newYearName);
+      }}>
+        <label htmlFor="newYearName">Nuevo año:</label>
+        <input 
+          type="text" 
+          id="newYearName" 
+          value={newYearName} 
+          onChange={(e) => setNewYearName(e.target.value)} 
+        />
+        <button type="submit">Create New Year</button>
+      </form>
+    </div>
+            
         </>
         
     )

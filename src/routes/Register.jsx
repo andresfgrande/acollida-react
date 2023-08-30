@@ -25,12 +25,12 @@ export default function(){
         })
     }
 
-    async function createUser(userId, name, surname, email) {
+    async function createUser(userId, name, lastname, email) {
         const userRef = doc(db, 'usuarios', userId);
         try {
             await setDoc(userRef, {
                 name: name,
-                surname: surname,
+                surname: lastname,
                 email: email,
                 normal_price: 2.25,
                 siblings_price: 2,
@@ -47,8 +47,6 @@ export default function(){
         const listen = onAuthStateChanged(auth, (user)=>{
             if(user){
                 navigate("/dashboard");
-                //getUsuarios(db);
-
             }else{
                 navigate("/register");
             }
