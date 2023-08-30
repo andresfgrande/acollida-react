@@ -234,7 +234,7 @@ export default function(){
         <button type="submit">Create New Year</button>
       </form>
     </div>
-            
+            <AuthDetails></AuthDetails>
         </>
         
     )

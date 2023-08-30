@@ -2,11 +2,30 @@ import { Outlet, Link } from "react-router-dom";
 import AuthDetails from "../components/AuthDetails";
 import React, { useEffect, useState } from 'react';
 
+
+import {auth} from "../firebase";
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { useNavigate } from "react-router-dom";
+import { doc, getDoc } from 'firebase/firestore/lite';
+import {db} from "../firebase";
+
 export default function(){
 
+   
+    const navigate = useNavigate();
+
     useEffect(()=>{
-    
+  
+       
+                navigate("/dashboard");
+           
+
+        
+     
+      
     },[])
+    
+    
     return(
         <>
 

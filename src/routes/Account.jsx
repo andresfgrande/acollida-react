@@ -22,7 +22,7 @@ export default function(){
         } else {
             console.log("No such user!");
         }
-    }
+    };
 
 
     useEffect(()=>{
@@ -41,7 +41,7 @@ export default function(){
         }
      
       
-    },[])
+    },[]);
 
     return (
         <div className="account-container">
