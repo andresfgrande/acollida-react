@@ -35,3 +35,7 @@
   .kid-card.not-paid {
     background-color: #fcc0c0; /* Soft red */
   }
+
+  .return-link.month{
+    position: unset;
+  }

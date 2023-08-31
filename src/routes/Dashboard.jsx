@@ -13,6 +13,7 @@ export default function(){
     const [months, setMonths] = useState(null);
     const [userId, setUserId] = useState(null);
     const [newYearName, setNewYearName] = useState("");
+    const [newMonthName, setNewMonthName] = useState("");
   
     const navigate = useNavigate();
 
@@ -50,7 +51,7 @@ export default function(){
         const newYearData = {
             name: yearName,
             months:{}
-          };
+        };
 
         try {
             const yearRef = await addDoc(collection(db, 'years'), newYearData);
@@ -75,6 +76,30 @@ export default function(){
           }
     }
 
+    async function createNewMonth(monthName){
+
+        const newMonthData = {
+            name: monthName,
+            year: currentYear,
+            kids: {},    
+        }
+
+        try {
+            const monthRef = await addDoc(collection(db, 'months'), newMonthData);
+            const newMonthId = monthRef.id;
+            console.log("New month created with ID: ", newMonthId);
+            console.log(currentYear, ' CURRENT YEAR');
+
+            await addNewMonthToYear(newMonthData.name, newMonthId);
+            loadMonthsFromYear(currentYear.id);
+        
+            return newMonthId;
+        } catch (e) {
+            console.error("Error adding new month: ", e);
+        }
+
+    }
+
     async function addNewYearToUser(yearName, newYearId) {
         
         const newYearData = {
@@ -94,10 +119,25 @@ export default function(){
               id: newYearId,
               name: yearName
             };
-          } catch (e) {
+        } catch (e) {
             console.error("Error adding new year to user: ", e);
-          }
+        }
       }
+
+    async function addNewMonthToYear (monthName, monthId){
+        const newMonthData = {
+            [`months.${monthId}`]: {
+              monthId: monthId,
+              name: monthName
+            }
+        };
+        try {
+            const yearRef = doc(db, 'years', currentYear.id);
+            await updateDoc(yearRef, newMonthData);
+        } catch (e) {
+            console.error("Error adding new month to year: ", e);
+        }
+    }
 
     const getLastYear = (user) => {
         if (user && user.years) {
@@ -220,20 +260,38 @@ export default function(){
         )}
        
        <div className="new-year-form-container">
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        createNewYear(newYearName);
-      }}>
-        <label htmlFor="newYearName">Nuevo año:</label>
-        <input 
-          type="text" 
-          id="newYearName" 
-          value={newYearName} 
-          onChange={(e) => setNewYearName(e.target.value)} 
-        />
-        <button type="submit">Create New Year</button>
-      </form>
-    </div>
+        <form onSubmit={(e) => {
+            e.preventDefault();
+            createNewYear(newYearName);
+            }}>
+            <label htmlFor="newYearName">Nuevo año:</label>
+            <input 
+            type="text" 
+            id="newYearName" 
+            value={newYearName} 
+            onChange={(e) => setNewYearName(e.target.value)} 
+            />
+            <button type="submit">Añadir</button>
+        </form>
+        
+        </div>
+
+        <div className="new-year-form-container">
+        <form onSubmit={(e) => {
+            e.preventDefault();
+            createNewMonth(newMonthName);
+            }}>
+            <label htmlFor="newMonthName">Nuevo mes:</label>
+            <input 
+            type="text" 
+            id="newMonthName" 
+            value={newMonthName} 
+            onChange={(e) => setNewMonthName(e.target.value)} 
+            />
+            <button type="submit">Añadir</button>
+        </form>
+        
+        </div>
             <AuthDetails></AuthDetails>
         </>
         
