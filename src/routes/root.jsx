@@ -16,8 +16,8 @@ export default function(){
 
     useEffect(()=>{
   
-       
-                navigate("/dashboard");
+       //si no hay ningun parametro ir a dashboard
+                //navigate("/dashboard");
            
 
         

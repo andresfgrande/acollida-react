@@ -127,7 +127,7 @@ export default function(){
     async function addNewMonthToYear (monthName, monthId){
         const newMonthData = {
             [`months.${monthId}`]: {
-              monthId: monthId,
+              month_id: monthId,
               name: monthName
             }
         };
