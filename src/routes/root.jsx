@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import {auth} from "../firebase";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,useParams} from "react-router-dom";
 import { doc, getDoc } from 'firebase/firestore/lite';
 import {db} from "../firebase";
 
@@ -14,7 +14,15 @@ export default function(){
    
     const navigate = useNavigate();
 
+    const { numYear, yearId } = useParams();
+
     useEffect(()=>{
+
+       if(numYear || yearId ){
+            console.log('HOLAAA', numYear,yearId);
+        }else{
+            navigate("/dashboard");
+        }
   
        //si no hay ningun parametro ir a dashboard
                 //navigate("/dashboard");

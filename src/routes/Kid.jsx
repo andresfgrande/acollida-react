@@ -104,7 +104,7 @@ export default function(){
         var horas = parseInt(horas_float);
         var minutos = (horas_float - horas)*60
         var total_hours = horas + ":" + roundNumber(minutos);
-        var total_price = parseFloat(kid.months[monthId].total_price) + parseFloat(dayData.day_price);
+        var total_price = roundNumber(parseFloat(kid.months[monthId].total_price) + parseFloat(dayData.day_price));
         /***************/
 
         const newDayData = {
@@ -121,11 +121,35 @@ export default function(){
         try {
           const kidRef = doc(db, 'kids', kidId);
           await updateDoc(kidRef, newDayData);
+          await updateKidInMonth({total_hours: total_hours, total_price: total_price});
         } catch (e) {
             console.error("Error adding new day to kid: ", e);
         }
     }
+    
+    async function updateKidInMonth(dayData){
+        const newDayData ={
+            [`kids.${kidId}`]: {
+                total_hours: dayData.total_hours,
+                total_price: dayData.total_price
+              }
+          }
 
+          try {
+            const monthRef = doc(db, 'months', monthId);
+            await updateDoc(monthRef, {
+              [`kids.${kidId}.total_hours`]: dayData.total_hours,
+              [`kids.${kidId}.total_price`]: dayData.total_price
+            });
+          } catch (e) {
+            console.error("Error updating new day in month: ", e);
+          }
+       
+    }
+
+    //TODO setMonthPaid, switchPrice
+
+    
     
 
     useEffect(()=>{
@@ -150,7 +174,7 @@ export default function(){
                         <h2>{monthName} {numYear}</h2>
                         <div className="info-grid">
                         <div className="info-item">
-                            <strong>Monto:</strong> <span>{kid.months[monthId].total_price}</span>
+                            <strong>Monto:</strong> <span>{roundNumber(kid.months[monthId].total_price)}</span>
                         </div>
                         <div className="info-item">
                             <strong>Pagado:</strong> <span>{kid.months[monthId].paid ? 'Si' : 'No'}</span>
