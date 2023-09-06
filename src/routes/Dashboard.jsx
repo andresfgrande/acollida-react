@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {auth} from "../firebase";
-import AuthDetails from "../components/AuthDetails";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useNavigate, Link} from "react-router-dom";
 import { doc, getDoc, collection, addDoc, updateDoc } from 'firebase/firestore/lite';
@@ -168,33 +167,36 @@ export default function(){
     },[])
   
 
+    
+
     const handleYearClick = (yearKey) => {
-        console.log('keyyy: ', yearKey);
         const selectedYear = user.years[yearKey];
         setCurrentYear(selectedYear);
         loadMonthsFromYear(selectedYear.id);
-        console.log("current year: ", currentYear);
     };
-
-    const renderYears = () => {
-       
     
+
+    
+    const renderYears = () => {
         if (user && user.years) {
             const yearsKeys = Object.keys(user.years);
             if (yearsKeys.length > 0) {
                 return (
-                    <div className="year-nav">
-                        <ul className="year-list">
+                    <div className="year-dropdown">
+                        <select className='custom-select'
+                            value={currentYear ? currentYear.name : ''} 
+                            onChange={(e) => handleYearClick(e.target.value)}
+                        >
+                            <option value="" disabled>Select a year</option>
                             {yearsKeys.map((yearKey, index) => (
-                                <li 
+                                <option 
                                     key={index} 
-                                    className="year-item"
-                                    onClick={() => handleYearClick(yearKey)}
+                                    value={yearKey}
                                 >
                                     {yearKey}
-                                </li>
+                                </option>
                             ))}
-                        </ul>
+                        </select>
                     </div>
                 );
             } else {
@@ -204,6 +206,7 @@ export default function(){
             return <p>No years available.</p>;
         }
     };
+    
     
     const renderMonths = () => {
         if (months) {
@@ -252,13 +255,12 @@ export default function(){
 
             {currentYear ? (
             <div>
-                <h2 className='title-year'>{currentYear.name}</h2>
                 {renderMonths()}
             </div>
         ) : (
             <p>Loading year data...</p>
         )}
-       
+       <div className='dashboard-forms'>
        <div className="new-year-form-container">
         <form onSubmit={(e) => {
             e.preventDefault();
@@ -292,7 +294,9 @@ export default function(){
         </form>
         
         </div>
-            <AuthDetails></AuthDetails>
+       </div>
+      
+            
         </>
         
     )

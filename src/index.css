@@ -38,11 +38,12 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: rgba(4, 72, 110, 0.76);
+  background: rgb(40 102 136);
   height: 55px;
   position: sticky;
   top: 0;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  z-index: 1;
 }
 
 /****LOGIN****/

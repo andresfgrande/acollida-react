@@ -4,6 +4,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc } from 'firebase/firestore/lite';
 import {db} from "../firebase";
+import AuthDetails from "../components/AuthDetails";
 
 export default function(){
 
@@ -77,6 +78,7 @@ export default function(){
             ) : (
                 <p>Loading user data...</p>
             )}
+            <AuthDetails></AuthDetails>
         </div>
     );
     

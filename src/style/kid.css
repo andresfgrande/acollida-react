@@ -117,6 +117,15 @@
     }
   }
 
+  @media (max-width: 480px) {
+    .switch-price{
+      margin-top: 1em !important;
+    }
+    .set-paid{
+      margin-top: 1em;
+    }
+  }
+
 
  button {
     padding: 10px 20px;
@@ -132,4 +141,43 @@ button:hover {
     background-color: #2c80bd;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
+
+  .set-paid{
+    margin-right: 1.2em;
+  }
+
+  .switch-price{
+    margin-top: 0.6em;
+  }
   
+  .info-item.not-paid{
+    background: #f98383;
+  }
+  .info-item.paid{
+    background: #5bd287;
+  }
+
+  /* Add a container element for the table */
+.table-container {
+  overflow-x: auto;
+}
+
+/* Style the table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  text-align: left;
+  padding: 8px;
+}
+
+/* Add media query for smaller screens */
+@media screen and (max-width: 600px) {
+  th, td {
+    /* Optional: You can set the font size smaller for mobile */
+    font-size: 12px;
+  }
+}

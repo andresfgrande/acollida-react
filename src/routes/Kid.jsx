@@ -137,8 +137,6 @@ export default function(){
           }
     }
 
-    //TODOswitchPrice
-
     async function setMonthPaid(state){
         const paidData ={
             [`months.${monthId}.paid`]: !state
@@ -167,6 +165,23 @@ export default function(){
         }
     }
 
+    async function switchPrice(fare){
+        
+        let newFare = fare === 2.25 ? 2 : 2.25;
+
+        const fareData = {
+            [`fare`]: newFare
+        }
+
+        try {
+            const kidRef = doc(db, 'kids', kidId);
+            await updateDoc(kidRef, fareData);
+            loadKidData(kidId)
+          } catch (e) {
+              console.error("Error updating fare: ", e);
+        }
+    }
+
     useEffect(()=>{
        if(monthId){
         loadKidData(kidId)
@@ -191,24 +206,27 @@ export default function(){
                         <div className="info-item">
                             <strong>Monto:</strong> <span>{roundNumber(kid.months[monthId].total_price)}</span>
                         </div>
-                        <div className="info-item">
+                        <div className={`info-item ${kid.months[monthId].paid ? 'paid' : 'not-paid'}`} >
                             <strong>Pagado:</strong> <span>{kid.months[monthId].paid ? 'Si' : 'No'}</span>
                         </div>
                         <div className="info-item">
                             <strong>Horas:</strong> <span>{kid.months[monthId].total_hours}</span>
                         </div>
                         <div className="info-item">
-                            <strong>Tarifa:</strong> <span>{kid.fare}</span>
+                            <strong>{kid.fare === 2.25 ? 'Tarifa: ' :'Tarifa hermanos: '}</strong> <span>{kid.fare}</span>
                         </div>
                         <div className="info-item">
                             <strong>Minutos:</strong> <span>{kid.months[monthId].total_minutes}</span>
                         </div>
-                        <div>
-                            <button onClick={()=>setMonthPaid(kid.months[monthId].paid)}>{kid.months[monthId].paid ? 'Marcar como no pagado' : 'Marcar como pagado'}</button>
+                        <div className='kid-actions'>
+                            <button className='set-paid' onClick={()=>setMonthPaid(kid.months[monthId].paid)}>{kid.months[monthId].paid ? 'Marcar como no pagado' : 'Marcar como pagado'}</button>
+                            <button className='switch-price' onClick={()=>switchPrice(kid.fare)}>Cambiar precio</button>
                         </div>
+                        
                        
                        
                     </div>
+                    <div className='table-container'>
                         <table >
                             <thead>
                             <tr>
@@ -227,6 +245,7 @@ export default function(){
                             ))}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                     </>
                 ) : (
