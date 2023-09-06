@@ -38,12 +38,7 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: <Dashboard/>,
-        key:'test2'
-      },
-      {
-        path: "dashboard/year/:numYear/:yearId",
-        element: <Dashboard/>,
-        key:'test1'
+        
       },
       {
         path: "account",

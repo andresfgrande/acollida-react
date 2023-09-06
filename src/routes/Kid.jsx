@@ -108,12 +108,10 @@ export default function(){
         /***************/
 
         const newDayData = {
-          [`months.${monthId}`]: {
-            days:days,
-            total_hours: total_hours,
-            total_minutes: total_minutes,
-            total_price: total_price
-          }
+            [`months.${monthId}.days`]: days,
+            [`months.${monthId}.total_hours`]: total_hours,
+            [`months.${monthId}.total_minutes`]: total_minutes,
+            [`months.${monthId}.total_price`]: total_price,
         };
   
         console.log(newDayData,'NEW DAY DATA TEST 2');
@@ -128,13 +126,6 @@ export default function(){
     }
     
     async function updateKidInMonth(dayData){
-        const newDayData ={
-            [`kids.${kidId}`]: {
-                total_hours: dayData.total_hours,
-                total_price: dayData.total_price
-              }
-          }
-
           try {
             const monthRef = doc(db, 'months', monthId);
             await updateDoc(monthRef, {
@@ -144,13 +135,37 @@ export default function(){
           } catch (e) {
             console.error("Error updating new day in month: ", e);
           }
-       
     }
 
-    //TODO setMonthPaid, switchPrice
+    //TODOswitchPrice
 
-    
-    
+    async function setMonthPaid(state){
+        const paidData ={
+            [`months.${monthId}.paid`]: !state
+        }
+
+        try {
+            const kidRef = doc(db, 'kids', kidId);
+            await updateDoc(kidRef, paidData);
+            await setMonthPaidInMonthView(state);
+            loadKidData(kidId)
+          } catch (e) {
+              console.error("Error updating paid state: ", e);
+        }
+    }
+
+    async function setMonthPaidInMonthView(state){
+        const paidData = {
+            [`kids.${kidId}.paid`]: !state,
+        }
+
+        try {
+            const monthRef = doc(db, 'months', monthId);
+            await updateDoc(monthRef, paidData);
+        } catch (e) {
+            console.error("Error updating paid state in month: ", e);
+        }
+    }
 
     useEffect(()=>{
        if(monthId){
@@ -187,6 +202,9 @@ export default function(){
                         </div>
                         <div className="info-item">
                             <strong>Minutos:</strong> <span>{kid.months[monthId].total_minutes}</span>
+                        </div>
+                        <div>
+                            <button onClick={()=>setMonthPaid(kid.months[monthId].paid)}>{kid.months[monthId].paid ? 'Marcar como no pagado' : 'Marcar como pagado'}</button>
                         </div>
                        
                        
