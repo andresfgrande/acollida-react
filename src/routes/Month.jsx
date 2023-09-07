@@ -12,7 +12,7 @@ export default function(){
     
     const [currentYear, setCurrentYear] = useState(null);
     const [kids, setKids] = useState(null);
-    const [newKid, setNewKid] = useState({name: null, lastname : null});
+    const [newKid, setNewKid] = useState({name: "", lastname : ""});
 
     const { yearId, monthId, numYear, monthName } = useParams();
   
@@ -31,25 +31,26 @@ export default function(){
     }
 
     async function createNewKid(kid){
-      console.log('month id: ', monthId);
+     
 
-      const newKidData = {
-          fare: parseFloat(2.25),
-          final_hour: '09:00',
-          name: kid.name,
-          surname: kid.lastname,
-          months: {
-            [monthId]: {
-              'days':[],
-              month_name: monthName,
-              month_year: numYear,
-              paid: false,
-              total_hours: 0,
-              total_minutes: 0,
-              total_price: 0
+      if(kid.name !== "" && kid.lastname !== ""){
+        const newKidData = {
+            fare: parseFloat(2.25),
+            final_hour: '09:00',
+            name: kid.name,
+            surname: kid.lastname,
+            months: {
+              [monthId]: {
+                'days':[],
+                month_name: monthName,
+                month_year: numYear,
+                paid: false,
+                total_hours: 0,
+                total_minutes: 0,
+                total_price: 0
+              }
             }
-          }
-      }
+        }
 
         try {
             const kidRef = await addDoc(collection(db, 'kids'), newKidData);
@@ -59,11 +60,14 @@ export default function(){
             await addNewKidToMonth(newKidData, newKidId);
 
             loadKidsFromMonth(monthId)
-        
+            setNewKid({name: "", lastname : ""});
             return newKidId;
         } catch (e) {
             console.error("Error adding new kid: ", e);
         }
+      }
+
+     
     }
 
     async function addNewKidToMonth(kidData, newKidId){
@@ -86,22 +90,6 @@ export default function(){
         await updateDoc(monthRef, newKidData);
       } catch (e) {
           console.error("Error adding new kid to month: ", e);
-      }
-    }
-
-    //PARA VER
-    async function addNewMonthToYear (monthName, monthId){
-      const newMonthData = {
-          [`months.${monthId}`]: {
-            monthId: monthId,
-            name: monthName
-          }
-      };
-      try {
-          const yearRef = doc(db, 'years', currentYear.id);
-          await updateDoc(yearRef, newMonthData);
-      } catch (e) {
-          console.error("Error adding new month to year: ", e);
       }
     }
 

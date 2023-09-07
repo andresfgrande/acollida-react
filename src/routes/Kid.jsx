@@ -12,7 +12,7 @@ export default function(){
     
 
     const [kid, setKid] = useState(null);
-    const [newDay, setNewDay] = useState({day: null, initial_hour : null, final_hour: '09:00'});
+    const [newDay, setNewDay] = useState({day: "", initial_hour : "", final_hour: '09:00'});
 
     const { yearId, monthId, numYear, monthName, kidId } = useParams();
   
@@ -64,33 +64,34 @@ export default function(){
 
     async function createNewDay(dayData){
 
-        console.log('OLD DAY DATA', dayData);
+        if(dayData.day !== "" && dayData.initial_hour !== "" && dayData.final_hour !== ""){
+            dayData = formatDayValues(dayData);
 
-        dayData = formatDayValues(dayData);
+            const newDayData = {
+                day: dayData.day,
+                day_minutes: dayData.day_minutes,
+                day_price: roundNumber(dayData.day_price),
+                final_hour: dayData.final_hour,
+                initial_hour: dayData.initial_hour,
+              }
+      
+              try {
+                  const dayRef = await addDoc(collection(db, 'days'), newDayData);
+                  const newDayId = dayRef.id;
+                  console.log("New day created with ID: ", newDayId);
+      
+                  await addNewDayToKid(newDayData, newDayId);
+      
+                  loadKidData(kidId)
+              
+                  setNewDay({day: "", initial_hour : "", final_hour: '09:00'});
+                  return newDayId;
+              } catch (e) {
+                  console.error("Error adding new day: ", e);
+              }
+        }
 
-        console.log('NEW DAY DATA', dayData);
-  
-        const newDayData = {
-            day: dayData.day,
-            day_minutes: dayData.day_minutes,
-            day_price: roundNumber(dayData.day_price),
-            final_hour: dayData.final_hour,
-            initial_hour: dayData.initial_hour,
-          }
-  
-          try {
-              const dayRef = await addDoc(collection(db, 'days'), newDayData);
-              const newDayId = dayRef.id;
-              console.log("New day created with ID: ", newDayId);
-  
-              await addNewDayToKid(newDayData, newDayId);
-  
-              loadKidData(kidId)
-          
-              return newDayId;
-          } catch (e) {
-              console.error("Error adding new day: ", e);
-          }
+        
     }
 
     async function addNewDayToKid(dayData, newDayId){

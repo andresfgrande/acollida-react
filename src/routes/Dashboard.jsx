@@ -47,55 +47,62 @@ export default function(){
 
     async function createNewYear(yearName) {
 
-        const newYearData = {
-            name: yearName,
-            months:{}
-        };
-
-        try {
-            const yearRef = await addDoc(collection(db, 'years'), newYearData);
-            const newYearId = yearRef.id;
-            console.log("New year created with ID: ", newYearId);
-            const updatedYear = await addNewYearToUser(newYearData.name, newYearId);
-        
-            setUser({
-              ...user,
-              years: {
-                ...user.years,
-                [newYearData.name]: updatedYear
+        if(yearName !== ""){
+            const newYearData = {
+                name: yearName,
+                months:{}
+            };
+    
+            try {
+                const yearRef = await addDoc(collection(db, 'years'), newYearData);
+                const newYearId = yearRef.id;
+                console.log("New year created with ID: ", newYearId);
+                const updatedYear = await addNewYearToUser(newYearData.name, newYearId);
+            
+                setUser({
+                  ...user,
+                  years: {
+                    ...user.years,
+                    [newYearData.name]: updatedYear
+                  }
+                });
+            
+                setCurrentYear(updatedYear);
+                loadMonthsFromYear(newYearId);
+            
+                return newYearId;
+              } catch (e) {
+                console.error("Error adding new year: ", e);
               }
-            });
-        
-            setCurrentYear(updatedYear);
-            loadMonthsFromYear(newYearId);
-        
-            return newYearId;
-          } catch (e) {
-            console.error("Error adding new year: ", e);
-          }
+        }
+ 
     }
 
     async function createNewMonth(monthName){
 
-        const newMonthData = {
-            name: monthName,
-            year: currentYear,
-            kids: {},    
+        if(monthName !== ""){
+            const newMonthData = {
+                name: monthName,
+                year: currentYear,
+                kids: {},    
+            }
+    
+            try {
+                const monthRef = await addDoc(collection(db, 'months'), newMonthData);
+                const newMonthId = monthRef.id;
+                console.log("New month created with ID: ", newMonthId);
+                console.log(currentYear, ' CURRENT YEAR');
+    
+                await addNewMonthToYear(newMonthData.name, newMonthId);
+                loadMonthsFromYear(currentYear.id);
+            
+                return newMonthId;
+            } catch (e) {
+                console.error("Error adding new month: ", e);
+            }
         }
 
-        try {
-            const monthRef = await addDoc(collection(db, 'months'), newMonthData);
-            const newMonthId = monthRef.id;
-            console.log("New month created with ID: ", newMonthId);
-            console.log(currentYear, ' CURRENT YEAR');
-
-            await addNewMonthToYear(newMonthData.name, newMonthId);
-            loadMonthsFromYear(currentYear.id);
         
-            return newMonthId;
-        } catch (e) {
-            console.error("Error adding new month: ", e);
-        }
 
     }
 
@@ -113,7 +120,7 @@ export default function(){
             await updateDoc(userRef, newYearData);
         
             console.log("New year added to user: ", userId);
-        
+            setNewYearName("");
             return {
               id: newYearId,
               name: yearName
@@ -133,6 +140,7 @@ export default function(){
         try {
             const yearRef = doc(db, 'years', currentYear.id);
             await updateDoc(yearRef, newMonthData);
+            setNewMonthName("");
         } catch (e) {
             console.error("Error adding new month to year: ", e);
         }
