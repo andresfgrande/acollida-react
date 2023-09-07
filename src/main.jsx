@@ -16,6 +16,7 @@ import "../src/style/dashboard.css";
 import "../src/style/month.css";
 import "../src/style/kid.css";
 import "../src/style/sidebar.css"; 
+import "../src/style/register.css"; 
 
 const router = createBrowserRouter([
   {
